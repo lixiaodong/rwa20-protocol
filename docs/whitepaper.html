@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RWA20 Whitepaper — Technical Specification v0.1</title>
+  <meta name="description" content="RWA20 Protocol Whitepaper: technical specification for the open standard for real-world asset tokenization with multi-jurisdiction compliance." />
+  <style>
+    :root {
+      --bg: #050a0f; --bg2: #0a1520; --accent: #00d9ff; --accent2: #00ff9d;
+      --text: #e8f4f8; --muted: #7a9bb5; --border: #1a3448; --card: #0c1c2c;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: var(--bg); color: var(--text); font-family: 'Georgia', serif; line-height: 1.8; }
+    .page { max-width: 780px; margin: 0 auto; padding: 60px 32px; }
+    .back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); text-decoration: none; font-family: system-ui; font-size: 0.85rem; margin-bottom: 48px; }
+    .doc-header { border-bottom: 1px solid var(--border); padding-bottom: 40px; margin-bottom: 48px; }
+    .doc-title { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 900; font-family: system-ui; letter-spacing: -1px; margin-bottom: 12px; }
+    .doc-subtitle { color: var(--muted); font-size: 1.1rem; margin-bottom: 24px; }
+    .doc-meta { display: flex; gap: 32px; flex-wrap: wrap; font-family: system-ui; font-size: 0.8rem; color: var(--muted); }
+    .doc-meta span strong { color: var(--text); }
+    h2 { font-size: 1.6rem; font-weight: 800; font-family: system-ui; letter-spacing: -0.5px; margin: 48px 0 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+    h3 { font-size: 1.15rem; font-weight: 700; font-family: system-ui; margin: 32px 0 12px; color: var(--accent); }
+    p { margin-bottom: 16px; color: var(--text); font-size: 1rem; }
+    code { background: rgba(0,217,255,0.08); border: 1px solid rgba(0,217,255,0.15); padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; color: var(--accent); font-family: monospace; }
+    pre { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin: 24px 0; overflow-x: auto; }
+    pre code { background: none; border: none; padding: 0; color: var(--accent2); font-size: 0.85rem; }
+    ul, ol { margin: 16px 0 16px 24px; }
+    li { margin-bottom: 8px; color: var(--text); }
+    blockquote { border-left: 3px solid var(--accent); padding: 16px 24px; margin: 24px 0; background: rgba(0,217,255,0.04); border-radius: 0 8px 8px 0; }
+    blockquote p { margin: 0; font-style: italic; color: var(--muted); }
+    table { width: 100%; border-collapse: collapse; margin: 24px 0; font-family: system-ui; font-size: 0.85rem; }
+    th { background: var(--card); padding: 12px 16px; text-align: left; border: 1px solid var(--border); color: var(--accent); font-weight: 700; }
+    td { padding: 12px 16px; border: 1px solid var(--border); color: var(--muted); }
+    tr:hover td { background: rgba(0,217,255,0.03); }
+    .toc { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 32px; margin-bottom: 48px; }
+    .toc h4 { font-family: system-ui; font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+    .toc ol { margin-left: 0; list-style: none; counter-reset: toc; }
+    .toc li { counter-increment: toc; margin-bottom: 8px; }
+    .toc li::before { content: counter(toc) ". "; color: var(--accent); font-family: system-ui; font-size: 0.85rem; }
+    .toc a { color: var(--text); text-decoration: none; font-family: system-ui; font-size: 0.9rem; }
+    .toc a:hover { color: var(--accent); }
+    .highlight-box { background: rgba(0,217,255,0.06); border: 1px solid rgba(0,217,255,0.2); border-radius: 12px; padding: 24px; margin: 24px 0; }
+    .highlight-box strong { color: var(--accent); }
+  </style>
+</head>
+<body>
+<div class="page">
+  <a href="index.html" class="back-link">← Back to RWA20.org</a>
+
+  <div class="doc-header">
+    <div class="doc-title">RWA20 Protocol<br />Technical Whitepaper</div>
+    <div class="doc-subtitle">An Open Standard for Real-World Asset Tokenization with Native Multi-Jurisdiction Legal Compliance</div>
+    <div class="doc-meta">
+      <span><strong>Version</strong> v0.1.0</span>
+      <span><strong>Status</strong> Draft — Open for Review</span>
+      <span><strong>License</strong> MIT</span>
+      <span><strong>Date</strong> April 2025</span>
+    </div>
+  </div>
+
+  <div class="toc">
+    <h4>Table of Contents</h4>
+    <ol>
+      <li><a href="#abstract">Abstract</a></li>
+      <li><a href="#background">Background & Problem Statement</a></li>
+      <li><a href="#design">Protocol Design Principles</a></li>
+      <li><a href="#architecture">Technical Architecture</a></li>
+      <li><a href="#compliance">Compliance Engine</a></li>
+      <li><a href="#attestations">Legal Attestation Layer</a></li>
+      <li><a href="#economics">Protocol Economics</a></li>
+      <li><a href="#governance">Governance</a></li>
+      <li><a href="#security">Security Considerations</a></li>
+      <li><a href="#roadmap">Roadmap</a></li>
+      <li><a href="#conclusion">Conclusion</a></li>
+    </ol>
+  </div>
+
+  <h2 id="abstract">1. Abstract</h2>
+  <p>RWA20 is an open-source, permissionless smart contract protocol designed to become the universal standard for tokenizing real-world assets (RWA) on Ethereum and EVM-compatible blockchains. The protocol addresses the fundamental bottleneck in RWA adoption: compliance.</p>
+  <p>By embedding multi-jurisdiction legal compliance directly into the ERC20 token transfer mechanism, RWA20 ensures that compliance cannot be bypassed by any transfer route — including decentralized exchanges, bridges, or direct wallet transfers. The protocol supports six initial jurisdictions (Singapore, Switzerland, UAE, Liechtenstein, Malaysia, United States) and is architected for unlimited extensibility.</p>
+  <div class="highlight-box">
+    <strong>Core thesis:</strong> Real-world asset tokenization has failed to scale not because the technology is immature, but because compliance has been treated as an add-on rather than a protocol primitive. RWA20 makes compliance a first-class citizen at the token layer.
+  </div>
+
+  <h2 id="background">2. Background & Problem Statement</h2>
+  <h3>2.1 The $500 Trillion Opportunity</h3>
+  <p>Global real-world assets — real estate, private equity, bonds, commodities, infrastructure — represent approximately $500 trillion in value. DeFi's total locked value peaked at approximately $180 billion. The gap is not technological: it is legal, regulatory, and structural.</p>
+
+  <h3>2.2 Why Existing Approaches Fail</h3>
+  <p>Current RWA tokenization platforms share four fundamental limitations:</p>
+  <ul>
+    <li><strong>Compliance as an external oracle:</strong> Most platforms check compliance via off-chain KYC providers or permissioned transfer restrictions. These are bypassable via DEX liquidity pools or direct on-chain transfers.</li>
+    <li><strong>Single-jurisdiction architecture:</strong> A token that satisfies US Reg D cannot easily satisfy Singapore MAS §274 or Swiss FINMA requirements simultaneously. Issuers must choose one market.</li>
+    <li><strong>No on-chain legal proof:</strong> Token holders cannot prove on-chain that their token corresponds to a specific legal document, court record, or regulatory filing. The link exists only off-chain.</li>
+    <li><strong>Closed platforms:</strong> Each platform (Centrifuge, Maple, Ondo, Securitize) builds a proprietary compliance stack. There is no interoperability, no standard, and no composability between platforms.</li>
+  </ul>
+
+  <h3>2.3 The Standard Gap</h3>
+  <p>The Ethereum ecosystem has powerful standards for fungible tokens (ERC20), non-fungible tokens (ERC721), and semi-fungible tokens (ERC1155). For security tokens, EIP-3643 (T-REX) provides a compliance framework focused on on-chain identity. However, no existing standard provides: (a) multi-jurisdiction compliance as a native protocol primitive, (b) on-chain legal attestations linking tokens to real-world legal records, and (c) an integrated economic model (launchpad + revenue distribution) suitable for any asset class. RWA20 fills this gap.</p>
+
+  <h2 id="design">3. Protocol Design Principles</h2>
+  <ol>
+    <li><strong>Compliance as primitive:</strong> Legal compliance must be enforced at the lowest level of the token implementation, not as an external layer that can be bypassed.</li>
+    <li><strong>Jurisdiction agnosticism:</strong> The core protocol must be neutral to specific legal frameworks. Jurisdictions are plug-in modules.</li>
+    <li><strong>Extensibility over completeness:</strong> It is better to ship a great extension mechanism than to pre-build every jurisdiction. A well-designed standard grows by contribution.</li>
+    <li><strong>On-chain legal provenance:</strong> The link between a token and its underlying legal document must be verifiable on-chain — not just via the issuer's word.</li>
+    <li><strong>Economic neutrality:</strong> The protocol must not impose rent-seeking fees that disadvantage any issuers or investors. Start at zero; earn trust first.</li>
+    <li><strong>Open source as strategy:</strong> The goal is not to be the biggest platform. The goal is to be the standard. The ERC20 contract has no business model — yet the entire DeFi ecosystem runs on it.</li>
+  </ol>
+
+  <h2 id="architecture">4. Technical Architecture</h2>
+  <h3>4.1 Core Token Contract</h3>
+  <p>The <code>RWA20Token</code> contract inherits from OpenZeppelin v5's ERC20, ERC20Votes, ERC20Permit, AccessControl, and Pausable. The compliance check is placed inside the internal <code>_update()</code> function:</p>
+  <pre><code>function _update(address from, address to, uint256 value) internal override {
+    if (from != address(0) && to != address(0)) {
+        require(
+            compliance.canTransfer(from, to, value),
+            "RWA20: transfer blocked by compliance"
+        );
+    }
+    super._update(from, to, value);
+    // Auto-delegate to self on first receive for governance snapshots
+    if (to != address(0) && delegates(to) == address(0)) {
+        _delegate(to, to);
+    }
+}</code></pre>
+
+  <h3>4.2 Compliance Architecture</h3>
+  <p>The compliance layer follows a strict interface hierarchy:</p>
+  <pre><code>IComplianceModule
+  └── IJurisdictionModule
+        └── BaseJurisdiction
+              ├── SGJurisdiction (Singapore MAS)
+              ├── CHJurisdiction (FINMA / DLT Act)
+              ├── UAEJurisdiction (ADGM / VARA)
+              ├── LIJurisdiction (TVTG / FMA)
+              ├── MYJurisdiction (SC Malaysia)
+              └── USJurisdiction (SEC Reg D / Reg S)</code></pre>
+
+  <h3>4.3 Multi-Jurisdiction OR Logic</h3>
+  <p>The <code>MultiJurisdictionCompliance</code> contract applies OR-logic across enabled jurisdictions. A transfer is permitted if and only if both parties each satisfy at least one enabled jurisdiction:</p>
+  <pre><code>function canTransfer(address from, address to, uint256 value)
+    external view returns (bool) {
+    bool fromQualifies = false;
+    bool toQualifies = false;
+    for (uint i = 0; i &lt; enabledCodes.length; i++) {
+        address mod = registry.getModule(enabledCodes[i]);
+        if (!fromQualifies && IJurisdictionModule(mod).isActiveInvestor(from))
+            fromQualifies = true;
+        if (!toQualifies && IJurisdictionModule(mod).isActiveInvestor(to))
+            toQualifies = true;
+        if (fromQualifies && toQualifies) return true;
+    }
+    return false;
+}</code></pre>
+
+  <h3>4.4 Revenue Distribution</h3>
+  <p>The <code>RevenueDistributor</code> uses ERC20Votes snapshots for O(1) per-holder claims, avoiding the need to iterate over all holders:</p>
+  <pre><code>// Snapshot at block N-1 for finality
+uint256 snapshotBlock = block.number - 1;
+uint256 totalSupplyAtSnapshot = token.getPastTotalSupply(snapshotBlock);
+
+// Per-claim calculation (no iteration)
+function claim(uint256 distributionId) external {
+    uint256 balance = token.getPastVotes(msg.sender, snapshot);
+    uint256 entitled = (balance * totalAmount) / totalSupplyAtSnapshot;
+    // ...
+}</code></pre>
+
+  <h2 id="compliance">5. Compliance Engine</h2>
+  <h3>5.1 Investor Classification</h3>
+  <table>
+    <tr><th>Class</th><th>Value</th><th>Jurisdictions</th><th>Typical Threshold</th></tr>
+    <tr><td>RETAIL</td><td>1</td><td>LI (prospectus)</td><td>No minimum</td></tr>
+    <tr><td>SOPHISTICATED</td><td>2</td><td>LI, MY</td><td>Net assets &gt; MYR 3M</td></tr>
+    <tr><td>PROFESSIONAL</td><td>3</td><td>SG, UAE</td><td>AUM &gt; USD 5M or professional role</td></tr>
+    <tr><td>ACCREDITED</td><td>4</td><td>SG, US</td><td>Income &gt; USD 200K or net worth &gt; USD 1M</td></tr>
+    <tr><td>QUALIFIED</td><td>5</td><td>CH</td><td>Institutional or CHF 2M AUM</td></tr>
+    <tr><td>INSTITUTIONAL</td><td>6</td><td>All</td><td>Licensed entity</td></tr>
+  </table>
+
+  <h3>5.2 Jurisdiction-Specific Rules</h3>
+  <p>Each jurisdiction module enforces its local regulatory requirements. Key examples:</p>
+  <ul>
+    <li><strong>Singapore:</strong> Max 50 investors for private placement (SFA §275 threshold). Auto-rejects if <code>registeredCount >= 50</code>.</li>
+    <li><strong>Switzerland:</strong> Lock-up period tracking. <code>CHJurisdiction.onTransfer()</code> records <code>firstPurchaseAt</code> and blocks early transfers.</li>
+    <li><strong>UAE:</strong> On-chain sanctions enforcement. Countries loaded into <code>_sanctionedCountries</code> mapping; investor country checked at registration.</li>
+    <li><strong>Liechtenstein:</strong> FMA registration number stored on-chain. Prospectus approval determines minimum investor class (RETAIL vs SOPHISTICATED).</li>
+    <li><strong>US:</strong> Reg D 506(b) enforces max 35 non-accredited investor cap. Reg S tracks 40-day restricted period. Rule 144 enforces 12-month lockup for restricted securities.</li>
+  </ul>
+
+  <h2 id="attestations">6. Legal Attestation Layer</h2>
+  <h3>6.1 Attestation Types</h3>
+  <p>RWA20 defines 9 legal attestation types covering the full spectrum of asset documentation:</p>
+  <table>
+    <tr><th>Type</th><th>Use Case</th><th>Typical Source</th></tr>
+    <tr><td>PROPERTY_TITLE</td><td>Real estate ownership proof</td><td>Land registry, notary</td></tr>
+    <tr><td>CORPORATE_RECORD</td><td>Company registration, ownership</td><td>ACRA, Companies House</td></tr>
+    <tr><td>COURT_ORDER</td><td>Enforceable legal judgment</td><td>ADGM Courts, DIFC</td></tr>
+    <tr><td>AUDIT_CERTIFICATE</td><td>Financial audit, NAV verification</td><td>Big 4 auditors</td></tr>
+    <tr><td>KYC_VERIFICATION</td><td>Identity and AML verification</td><td>Licensed KYC providers</td></tr>
+    <tr><td>REGULATORY_APPROVAL</td><td>Official regulatory clearance</td><td>MAS, FINMA, FCA, SEC</td></tr>
+    <tr><td>VALUATION_REPORT</td><td>Independent asset valuation</td><td>RICS, licensed valuers</td></tr>
+    <tr><td>CUSTODY_PROOF</td><td>Custodian confirmation of holding</td><td>Licensed custodians</td></tr>
+    <tr><td>LEGAL_OPINION</td><td>Counsel's legal analysis</td><td>Law firms</td></tr>
+  </table>
+
+  <h3>6.2 On-Chain Legal Bodies</h3>
+  <ul>
+    <li><strong>Ethereum Attestation Service (EAS):</strong> Mainnet address <code>0xA1207F3BBa224E2c9c3c6D5aF63D0eb1582Ce587</code>. Schema-based attestations with built-in revocation.</li>
+    <li><strong>Kleros:</strong> Decentralized court providing dispute resolution and evidence verification. Awards are bridged into the RWA20 attestation registry.</li>
+    <li><strong>ADGM Courts:</strong> The Abu Dhabi Global Market courts explicitly accept blockchain records as evidence under their 2023 digital economy regulations.</li>
+    <li><strong>Liechtenstein FMA:</strong> The Financial Market Authority operates the TT Register referenced by LIJurisdiction tokens.</li>
+  </ul>
+
+  <h2 id="economics">7. Protocol Economics</h2>
+  <h3>7.1 Fee Structure</h3>
+  <table>
+    <tr><th>Fee Type</th><th>Hard Cap</th><th>Phase 0</th><th>Phase 1 Target</th></tr>
+    <tr><td>Asset Issuance</td><td>1.00%</td><td>0%</td><td>0.05%</td></tr>
+    <tr><td>Revenue Distribution</td><td>2.00%</td><td>0%</td><td>0.50%</td></tr>
+    <tr><td>DEX Swap (wRWA20)</td><td>0.30%</td><td>0%</td><td>0.10%</td></tr>
+    <tr><td>Bonding Curve</td><td>1.00%</td><td>0%</td><td>0.05%</td></tr>
+  </table>
+  <p>Hard caps are enforced in immutable contract code — they cannot be exceeded even by protocol governance.</p>
+
+  <h3>7.2 Fee Routing</h3>
+  <p>Collected fees flow through <code>ProtocolFeeManager.sweep()</code> and are distributed to three pools:</p>
+  <ul>
+    <li><strong>Treasury (70%):</strong> Protocol development and operations fund</li>
+    <li><strong>Ecosystem (20%):</strong> Grants for jurisdiction module contributors, auditors, legal researchers</li>
+    <li><strong>Stakers (10%):</strong> RWAG token stakers who participate in protocol governance</li>
+  </ul>
+
+  <h2 id="governance">8. Governance</h2>
+  <p>Phase 0–1 governance is controlled by the founding team via a Gnosis Safe multisig. Phase 2 transitions to RWAG token governance:</p>
+  <ul>
+    <li>100 million RWAG total supply</li>
+    <li>On-chain proposals via Governor contract (inherited from OpenZeppelin)</li>
+    <li>Parameters under governance control: fee levels (within hard caps), jurisdiction approvals, treasury allocation, grant programs</li>
+    <li>Parameters excluded from governance: hard fee caps, MIT license, core protocol interfaces</li>
+  </ul>
+
+  <h2 id="security">9. Security Considerations</h2>
+  <ul>
+    <li><strong>Compliance bypass prevention:</strong> Placement inside <code>_update()</code> ensures no transfer mechanism — including <code>transferFrom()</code>, DEX router calls, or flash loans — can bypass compliance checks.</li>
+    <li><strong>Attestation trust model:</strong> Attestors require <code>ATTESTOR_ROLE</code> in the registry. Trust is jurisdiction-scoped: a Singapore attestor cannot create UAE attestations.</li>
+    <li><strong>Fee manipulation:</strong> Hard caps are set in contract constructor as immutable constants. No governance action can exceed them.</li>
+    <li><strong>Oracle manipulation:</strong> Price feeds use Chainlink's decentralized oracle network with heartbeat checks and price deviation bounds.</li>
+    <li><strong>Snapshot manipulation:</strong> Revenue snapshots use <code>block.number - 1</code> to prevent same-block flash loan attacks on distribution claims.</li>
+  </ul>
+  <blockquote><p>A formal security audit is planned for Phase 1. Contributions to the test suite and audit preparation are welcome.</p></blockquote>
+
+  <h2 id="roadmap">10. Roadmap</h2>
+  <table>
+    <tr><th>Phase</th><th>Name</th><th>Key Milestones</th><th>Status</th></tr>
+    <tr><td>0</td><td>Bootstrap</td><td>Open source release, 6 jurisdictions, full DApp</td><td>✓ Complete</td></tr>
+    <tr><td>1</td><td>Community</td><td>Mainnet deployment, security audit, JP+GB jurisdictions, first 10 issuances</td><td>Active</td></tr>
+    <tr><td>2</td><td>DAO</td><td>RWAG governance token, on-chain voting, cross-chain deployment, institutional API</td><td>Planned</td></tr>
+    <tr><td>3</td><td>Standard</td><td>20+ jurisdictions, EIP proposal, enterprise SaaS, regulatory recognition</td><td>Planned</td></tr>
+  </table>
+
+  <h2 id="conclusion">11. Conclusion</h2>
+  <p>RWA20 represents a fundamental shift in how real-world asset tokenization is approached: from fragmented platform solutions to a unified, permissionless protocol standard. By making compliance a first-class protocol primitive — not an afterthought — RWA20 enables any asset, in any jurisdiction, to be tokenized with the full force of local law behind it.</p>
+  <p>The protocol is designed to grow by community contribution. Every lawyer who reviews a jurisdiction module, every developer who builds on the protocol, and every regulator who engages with the standard makes the entire ecosystem stronger. This is the network effect that turns a good protocol into a lasting standard.</p>
+  <p>We invite developers, legal researchers, asset managers, and regulators worldwide to join us in building the infrastructure that will finally bring the $500 trillion real-world asset market on-chain.</p>
+
+  <p style="margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border); color: var(--muted); font-size: 0.85rem; font-family: system-ui;">
+    RWA20 Protocol · MIT License · <a href="https://github.com/lxd422152276/rwa20-protocol" style="color: var(--accent);">github.com/lxd422152276/rwa20-protocol</a>
+  </p>
+</div>
+</body>
+</html>

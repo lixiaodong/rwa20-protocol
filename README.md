@@ -1,409 +1,213 @@
 # RWA20 Protocol
 
-> **One-click tokenization of real-world assets** — Real Estate · Agriculture · Gold · Debt
+<div align="center">
 
-RWA20 is a modular, production-ready smart contract protocol for issuing, trading, and distributing revenue from tokenized real-world assets. Think **pump.fun**, but for tangible assets like durian farms and office buildings.
+**The Open Standard for Real-World Asset Tokenization**
 
----
+[![License: MIT](https://img.shields.io/badge/License-MIT-00d9ff.svg)](LICENSE)
+[![Solidity](https://img.shields.io/badge/Solidity-0.8.20-00ff9d.svg)](https://soliditylang.org)
+[![OpenZeppelin](https://img.shields.io/badge/OpenZeppelin-v5-7c3aed.svg)](https://openzeppelin.com)
+[![Hardhat](https://img.shields.io/badge/Hardhat-2.22-yellow.svg)](https://hardhat.org)
+[![Contracts](https://img.shields.io/badge/Contracts-75-brightgreen.svg)](#architecture)
+[![Jurisdictions](https://img.shields.io/badge/Jurisdictions-6_Live-00d9ff.svg)](#jurisdictions)
+[![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-00ff9d.svg)](CONTRIBUTING.md)
 
-## Architecture Overview
+[🌐 Website](https://lxd422152276.github.io/rwa20-protocol/) · [📄 Whitepaper](https://lxd422152276.github.io/rwa20-protocol/whitepaper.html) · [📚 Docs](docs/) · [🤝 Contributing](CONTRIBUTING.md)
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                          RWALaunchpad                               │
-│   One-click deploy: token + compliance + oracle + revenue + wrapper │
-└───────────────────────────┬─────────────────────────────────────────┘
-                            │ deploys via
-                            ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                         RWA20Factory                                │
-└──┬──────────┬────────────┬──────────────┬───────────────────────────┘
-   │          │            │              │
-   ▼          ▼            ▼              ▼
-RWA20Token  Compliance  AssetOracle  RevenueDistributor   WRWA20
-   │            │            │              │                │
-   │         ┌──┴───┐     NAV/Yield   Snapshot USDC      1:1 DEX
-   │         │      │     updates     distribution       wrapper
-   │    BasicComp NoComp
-   │    (KYC)    (Open)
-   │
-   └── ERC20 + ERC20Votes + ERC20Permit + AccessControl + Pausable
-```
+</div>
 
 ---
 
-## Contract Reference
+## What is RWA20?
 
-### `IRWA20` — Token Interface
+RWA20 is an open-source Ethereum protocol for tokenizing real-world assets (RWA) — real estate, private equity, commodities, funds, and more — with **native multi-jurisdiction legal compliance baked into the token itself**.
 
-The canonical interface all RWA20 tokens implement. Extends ERC-20 with:
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `assetType` | `enum AssetType` | REAL_ESTATE / AGRICULTURE / GOLD / DEBT |
-| `assetId` | `string` | Off-chain asset identifier (e.g. "RE-MY-KL-001") |
-| `legalInfo` | `LegalInfo` | SPV name, jurisdiction, agreement hash |
-| `custodyInfo` | `CustodyInfo` | Custodian address, audit proof hash, timestamp |
-| `complianceModule` | `address` | Pluggable compliance contract |
-| `oracle` | `address` | Asset valuation oracle |
-
-### `RWA20Token` — Core Token
-
-Full-featured ERC-20 token with:
-- **ERC20Votes** for snapshot-based revenue distribution
-- **ERC20Permit** for gasless approvals (EIP-2612)
-- **AccessControl** with MINTER / PAUSER / ORACLE / ADMIN roles
-- **Pausable** for emergency stops
-- **Auto-delegation** on first mint (enables revenue snapshots without user action)
-
-```solidity
-// Compliance check happens in _update() hook
-function _update(address from, address to, uint256 amount) internal override {
-    if (complianceModule != address(0) && from != address(0)) {
-        (bool ok, string memory reason) = IComplianceModule(complianceModule).canTransfer(from, to, amount);
-        require(ok, reason);
-    }
-    super._update(from, to, amount);
-}
-```
-
-### `IComplianceModule` — Pluggable Compliance Interface
-
-```solidity
-interface IComplianceModule {
-    function canTransfer(address from, address to, uint256 amount)
-        external view returns (bool allowed, string memory reason);
-    function onTransfer(address from, address to, uint256 amount) external;
-}
-```
-
-Two implementations are provided:
-
-| Contract | Behavior |
-|----------|----------|
-| `NoCompliance` | Always allows — for open/retail trading |
-| `BasicCompliance` | KYC whitelist + jurisdiction + investor tier + transfer limits |
-
-Switch compliance at any time via `token.setComplianceModule(newModule)`.
-
-### `BasicCompliance` — Full KYC Module
-
-| Feature | Detail |
-|---------|--------|
-| KYC whitelist | `approved: bool` per address |
-| Investor tiers | `NONE / RETAIL / ACCREDITED` |
-| Jurisdiction | ISO 3166-1 alpha-2 codes (e.g. "MY", "SG", "US") |
-| Transfer limits | Per-investor max per-transaction amount |
-| Emergency pause | Blocks all transfers instantly |
-| Batch operations | `batchSetInvestors()` for gas-efficient onboarding |
-
-### `AssetOracle` — Valuation & Yield Data
-
-Role-restricted oracle updated by the issuer or an authorized oracle feed:
-
-```solidity
-struct AssetData {
-    uint256 navUSD;           // Net asset value (18 decimals)
-    uint256 annualYieldBps;   // Annual yield in basis points (800 = 8%)
-    uint256 yieldPeriodStart; // Harvest/rental period start
-    uint256 yieldPeriodEnd;   // Harvest/rental period end
-    string  yieldMetadata;    // IPFS CID of rent roll / crop report
-    uint256 updatedAt;
-    address updatedBy;
-}
-```
-
-**Agriculture model** (durian farm):
-1. Pre-season: push estimated NAV + yield forecast
-2. During harvest: update with crop output metadata
-3. Post-harvest: update actual yield; trigger `RevenueDistributor.createPeriod()`
-
-**Real estate model**:
-1. Monthly/quarterly: update rental income data
-2. Annual: update NAV from property valuation
-
-### `RevenueDistributor` — Snapshot USDC Payouts
+Think of it as **ERC20 for the physical world**: a permissionless standard that any developer, asset manager, or legal entity can build on. The compliance layer is not an add-on — it lives inside ERC20's `_update()` transfer hook, making it technically impossible to bypass.
 
 ```
-Admin calls createPeriod(amount)
-    → Pulls USDC from caller
-    → Snapshots total supply at current block - 1
-    → Records period: { snapshotBlock, totalReward, totalSupply }
-
-Holders call claim(periodId) or claimMultiple([1,2,3])
-    → Checks getPastVotes(user, snapshotBlock)
-    → Transfers: (userBalance / totalSupply) × totalReward USDC
+Global RWA Market  ≈ $500 Trillion
+Currently Tokenized  < 0.01%
+The Bottleneck       = Compliance
+RWA20 Solution       = Compliance as Protocol Primitive
 ```
 
-**Key design decision**: Uses `ERC20Votes.getPastVotes()` instead of iterating all holders. O(1) per claim, no loop gas bomb.
+## Key Features
 
-### `WRWA20` — DEX Wrapper
+| Feature | Description |
+|---|---|
+| 🔒 **Compliance-Native** | Legal checks inside ERC20 `_update()` hook — every transfer enforced, zero bypass |
+| 🌍 **Multi-Jurisdiction** | OR-logic: qualify in ANY of 6 jurisdictions to transact |
+| ⚖️ **On-Chain Legal Proofs** | EAS + Kleros + ADGM Courts — 9 attestation types |
+| 💰 **Revenue Distribution** | O(1) snapshot-based yield/rent/dividend distribution |
+| 📈 **Bonding Curve Launchpad** | Fair-launch price discovery for any asset |
+| 🔄 **DEX Wrapper** | Compliant tokens trade on Uniswap via wRWA20 |
+| 🗳️ **Governance Ready** | ERC20Votes — token holders vote on day one |
+| ⚡ **Zero Bootstrap Fees** | 0% fees in Phase 0; hard-capped max 1% in code |
 
-Compliance-restricted RWA20 tokens can't be freely traded on Uniswap/Curve. WRWA20 solves this:
+## Jurisdictions
 
-```
-wrap(amount)   →  Transfer RWA20 to this contract; mint equal wRWA20
-unwrap(amount) →  Burn wRWA20; transfer equal RWA20 to caller
-```
+| Flag | Country | Regulatory Framework | Status |
+|---|---|---|---|
+| 🇸🇬 | Singapore | MAS SFA §274/275 | ✅ Live |
+| 🇨🇭 | Switzerland | FINMA FinSA · DLT Act (Registerwertrechte) | ✅ Live |
+| 🇦🇪 | UAE | ADGM FSRA · VARA Investment Token Rules | ✅ Live |
+| 🇱🇮 | Liechtenstein | TVTG Token Container Model · FMA TT Register | ✅ Live |
+| 🇲🇾 | Malaysia | SC Malaysia CMSA · Digital Assets Guidelines | ✅ Live |
+| 🇺🇸 | United States | SEC Reg D 506(b/c) · Reg S · Rule 144 | ✅ Live |
+| 🇯🇵 | Japan | FSA FIEA | 🔜 Coming |
+| 🇬🇧 | United Kingdom | FCA FSMA | 🔜 Coming |
 
-1 wRWA20 == 1 RWA20 at all times. Use wRWA20 for:
-- DEX liquidity pools
-- Collateral in DeFi protocols
-- Free peer-to-peer trading
+**Adding a new jurisdiction takes one contract deployment.** See [CONTRIBUTING.md](CONTRIBUTING.md#adding-a-jurisdiction).
 
-### `BondingCurve` — Fundraising Pricing
-
-Linear bonding curve: `price(n) = basePrice + (slope × tokensSold) / 1e18`
-
-```
-cost to buy n tokens = n × basePrice + slope × (2×sold + n) × n / (2×1e18)
-```
-
-Example configuration (agriculture crowdfund):
-- `basePrice = 0.20 USDC/token`
-- `slope = 0.00000002 × 1e18` (tiny price increase)
-- `fundingTarget = 100,000 USDC`
-- `maxTokens = 500,000`
-
-### `RWALaunchpad` — One-Click Deploy
-
-Single `launch(LaunchConfig cfg)` call deploys:
-1. `RWA20Token`
-2. `BasicCompliance` or `NoCompliance`
-3. `AssetOracle`
-4. `RevenueDistributor`
-5. `WRWA20`
-6. `BondingCurve` (optional, if `fundingTarget > 0`)
-
-Collects a configurable launch fee in USDC.
-
----
-
-## Real Asset Templates
-
-### 🏢 Real Estate (KL Tower Office)
+## Architecture
 
 ```
-Asset:         Grade-A Office, Kuala Lumpur Tower
-SPV:           KL Tower Realty Sdn Bhd
-Jurisdiction:  MY
-Token:         KLTO — 1,000,000 tokens
-Compliance:    BasicCompliance (accredited investors only)
-Yield:         6.5% annual rental yield
-Distribution:  Quarterly USDC distributions
-Duration:      5-year hold
-Bonding Curve: $0.50 floor, $500,000 funding target
+┌─────────────────────────────────────────────────────┐
+│                   DApp Frontend                      │
+│         Next.js · wagmi v2 · RainbowKit              │
+├─────────────────────────────────────────────────────┤
+│                Protocol Layer                        │
+│  RWA20Token · RevenueDistributor · RWALaunchpad      │
+│  wRWA20Wrapper · ProtocolFeeManager · RWAOracle      │
+├─────────────────────────────────────────────────────┤
+│              Compliance Engine                       │
+│  MultiJurisdictionCompliance · JurisdictionRegistry  │
+│  SG · CH · UAE · LI · MY · US Jurisdiction Modules  │
+├─────────────────────────────────────────────────────┤
+│           Legal Attestation Layer                    │
+│  LegalAttestationRegistry · EASAdapter · Kleros     │
+├─────────────────────────────────────────────────────┤
+│              Infrastructure                          │
+│     Ethereum EVM · OpenZeppelin v5 · Chainlink       │
+└─────────────────────────────────────────────────────┘
 ```
-
-```bash
-npx hardhat run scripts/examples/deployRealEstate.ts --network localhost
-```
-
-### 🌳 Agriculture (Musang King Durian Farm)
-
-```
-Asset:         Musang King Durian Farm, Raub, Pahang
-SPV:           Raub Durian Holdings Sdn Bhd
-Jurisdiction:  MY
-Token:         DURIAN — 500,000 tokens
-Compliance:    None (open retail trading)
-Yield:         ~18% annual (harvest-dependent)
-Distribution:  Per-harvest USDC payouts
-Duration:      5-year cycle (trees bear fruit from year 3)
-Bonding Curve: $0.20 floor, $100,000 funding target
-Oracle Update: Pre-season + post-harvest
-```
-
-```bash
-npx hardhat run scripts/examples/deployDurian.ts --network localhost
-```
-
----
 
 ## Quick Start
 
-### Prerequisites
-
-- Node.js 18+
-- npm or yarn
-
-### Setup
-
 ```bash
-# Install protocol dependencies
-cd RWA20
+git clone https://github.com/lxd422152276/rwa20-protocol.git
+cd rwa20-protocol
 npm install
-
-# Compile contracts
-npm run compile
-
-# Run tests
-npm test
-
-# Start local node
-npm run node
-
-# Deploy in another terminal
-npm run deploy:local
-
-# Run example assets
-npx hardhat run scripts/examples/deployRealEstate.ts --network localhost
-npx hardhat run scripts/examples/deployDurian.ts --network localhost
+npx hardhat compile   # 75 contracts, 0 errors
+npx hardhat test
 ```
 
-### Frontend
+## Usage Example
 
-```bash
-# Copy deployed addresses to frontend
-cp deployed-addresses.json frontend/lib/deployedAddresses.json
+```typescript
+// 1. Deploy multi-jurisdiction compliance
+const compliance = await MultiJurisdictionCompliance.deploy(registry.address);
+await compliance.enableJurisdiction("SG");
+await compliance.enableJurisdiction("US");
 
-# Set up env
-cp frontend/.env.example frontend/.env.local
-# Edit frontend/.env.local with your deployed addresses
+// 2. Deploy the RWA token (compliance hook wired at construction)
+const token = await RWA20Token.deploy("KL Tower Floor 12", "KLT12", compliance.address);
 
-# Install and run
-cd frontend
-npm install
-npm run dev
-# → http://localhost:3000
+// 3. Register investors per-jurisdiction
+await sgModule.registerInvestor(investor1, InvestorClass.ACCREDITED);
+await usModule.registerInvestor(investor2, InvestorClass.ACCREDITED);
+
+// 4. All transfers are compliance-checked automatically
+await token.mint(investor1, ethers.parseEther("1000"));
+await token.connect(investor1).transfer(investor2, 100); // ✅ both qualify
+
+// 5. Distribute revenue (rent, yield, dividends)
+await distributor.distribute({ value: ethers.parseEther("10") });
+await distributor.connect(investor1).claim(distributionId); // O(1) claim
 ```
 
----
-
-## Frontend Pages
-
-| Route | Description |
-|-------|-------------|
-| `/` | Dashboard with protocol stats and asset templates |
-| `/launch` | 3-step wizard to deploy a new RWA token |
-| `/assets` | Explorer: browse all launched assets with filter/search |
-| `/assets/[address]` | Asset detail: oracle data, bonding curve, revenue claim |
-| `/portfolio` | User's holdings + claimable revenue across all assets |
-
----
-
-## Deployment
-
-### Local (Hardhat node)
-
-```bash
-npm run node
-npm run deploy:local
-```
-
-### Sepolia Testnet
-
-```bash
-cp .env.example .env
-# Fill in PRIVATE_KEY, SEPOLIA_RPC_URL, ETHERSCAN_API_KEY
-npm run deploy:sepolia
-```
-
-### Polygon / Amoy
-
-```bash
-npx hardhat run scripts/deploy.ts --network polygon-amoy
-```
-
----
-
-## Security Considerations
-
-### Smart Contract
-
-- **Reentrancy**: `RevenueDistributor`, `WRWA20`, and `BondingCurve` all use `ReentrancyGuard`
-- **Access control**: All privileged functions use `AccessControl` — no `Ownable` on the token
-- **Integer overflow**: Solidity 0.8.24 has built-in overflow protection
-- **Compliance bypass**: Compliance is checked in `_update()` — cannot be bypassed via `transferFrom`
-- **Snapshot safety**: `snapshotBlock = block.number - 1` ensures `getPastVotes()` always has a finalized checkpoint
-- **Auto-delegate**: `mint()` auto-delegates to recipient so snapshots work without user action
-
-### Production Checklist
-
-- [ ] Audit all contracts (especially `RevenueDistributor` and `BondingCurve`)
-- [ ] Use production USDC (not MockUSDC)
-- [ ] Set `minTier = ACCREDITED` in `BasicCompliance` for real estate
-- [ ] Configure jurisdiction allowlist before issuing tokens
-- [ ] Set a non-zero `launchFee` to prevent spam
-- [ ] Use a multisig for `DEFAULT_ADMIN_ROLE`
-- [ ] Add price oracle staleness checks (`isStale()` in `AssetOracle`)
-- [ ] Implement Chainlink / Pyth for NAV feeds in production
-
----
-
-## Gas Estimates (approximate, Hardhat local)
-
-| Operation | Gas |
-|-----------|-----|
-| Deploy full stack (via factory) | ~4.2M |
-| `launch()` via launchpad | ~4.5M |
-| `mint()` | ~80K |
-| `transfer()` (NoCompliance) | ~55K |
-| `transfer()` (BasicCompliance) | ~90K |
-| `createPeriod()` | ~130K |
-| `claim()` | ~85K |
-| `claimMultiple(5 periods)` | ~180K |
-| `wrap()` / `unwrap()` | ~65K |
-| `buy()` (BondingCurve) | ~100K |
-
----
-
-## Module Dependency Graph
+## How Compliance Works
 
 ```
-contracts/
-├── core/
-│   ├── IRWA20.sol            ← shared types (AssetType, LegalInfo, CustodyInfo)
-│   ├── RWA20Token.sol        ← inherits IRWA20, ERC20Votes, AccessControl
-│   └── RWA20Factory.sol      ← deploys full stack, no token logic
-├── compliance/
-│   ├── IComplianceModule.sol ← interface
-│   ├── NoCompliance.sol      ← pass-through
-│   └── BasicCompliance.sol   ← KYC + jurisdiction + tier
-├── revenue/
-│   └── RevenueDistributor.sol ← reads ERC20Votes, distributes USDC
-├── oracle/
-│   └── AssetOracle.sol        ← role-restricted data store
-├── wrapper/
-│   └── WRWA20.sol             ← 1:1 ERC20 wrapper for DEX
-├── launchpad/
-│   ├── BondingCurve.sol       ← linear pricing, calls token.mint()
-│   └── RWALaunchpad.sol       ← calls RWA20Factory + deploys BondingCurve
-└── mocks/
-    └── MockUSDC.sol           ← 6-decimal ERC20 for testing
+token.transfer(to, amount)
+        ↓
+  ERC20._update()            ← compliance runs HERE (unforgeable)
+        ↓
+  MultiJurisdictionCompliance.canTransfer()
+        ↓
+  OR-logic across all enabled jurisdiction modules:
+  ├── SGJurisdiction.isActiveInvestor(from)?  ← MAS SFA §274
+  ├── USJurisdiction.isActiveInvestor(from)?  ← SEC Reg D
+  └── CHJurisdiction.isActiveInvestor(from)?  ← FINMA FinSA
+        ↓
+  Both parties qualify in ≥1 jurisdiction → ✅ Transfer proceeds
+  Either party fails all jurisdictions   → ❌ Revert: "compliance blocked"
 ```
 
----
+This applies to **every transfer** — direct, DEX, bridge, multisig — without exception.
 
-## Extension Points
+## Protocol Fees
 
-| Feature | How to Add |
-|---------|------------|
-| Merkle drop compliance | Implement `IComplianceModule` with Merkle proof verification |
-| ERC-1155 multi-asset | Extend `RWA20Token` with ERC-1155 features |
-| Automated oracle | Add Chainlink Automation to call `oracle.updateData()` on schedule |
-| NFT custody proof | Store an ERC-721 token ID in `CustodyInfo.custodian` |
-| Multi-currency yield | Add `rewardToken` parameter to `RevenueDistributor` |
-| vesting schedule | Add a `TokenVesting` module consuming `MINTER_ROLE` |
-| governance | Wire `ERC20Votes` to `OpenZeppelin Governor` for DAO governance |
+All fees start at **0%** in Phase 0. Hard caps are immutable in contract code:
 
----
+| Fee Type | Hard Cap | Phase 0 | Phase 1 (planned) |
+|---|---|---|---|
+| Asset Issuance | 1.00% | **0%** | 0.05% |
+| Revenue Distribution | 2.00% | **0%** | 0.50% |
+| DEX Swap | 0.30% | **0%** | 0.10% |
 
-## Tech Stack
+Fee routing: 70% treasury · 20% ecosystem grants · 10% RWAG stakers
 
-| Layer | Technology |
-|-------|-----------|
-| Smart contracts | Solidity 0.8.24 |
-| Framework | Hardhat + TypeChain |
-| Libraries | OpenZeppelin Contracts v5 |
-| Frontend | Next.js 14 (App Router) |
-| Web3 | wagmi v2 + viem |
-| Wallet | RainbowKit |
-| Styling | Tailwind CSS |
-| Testing | Chai + Hardhat Network Helpers |
+## Legal Attestation Types
 
----
+| Type | Use Case |
+|---|---|
+| `PROPERTY_TITLE` | Real estate deed, land registry |
+| `CORPORATE_RECORD` | Company registration, shareholder register |
+| `COURT_ORDER` | ADGM/DIFC court judgment, arbitration award |
+| `AUDIT_CERTIFICATE` | Big 4 financial audit, NAV verification |
+| `KYC_VERIFICATION` | AML-compliant identity check |
+| `REGULATORY_APPROVAL` | MAS/FINMA/SEC official clearance |
+| `VALUATION_REPORT` | RICS-certified asset valuation |
+| `CUSTODY_PROOF` | Licensed custodian confirmation |
+| `LEGAL_OPINION` | Counsel's securities law analysis |
+
+## Contributing
+
+We especially need:
+
+- **Lawyers & Compliance Experts** — Review/add jurisdiction modules
+- **Solidity Developers** — Protocol features, test coverage, auditing
+- **Frontend Developers** — DApp UX, data visualization
+- **Asset Managers** — Pilot issuances, product feedback
+- **Regulators** — Official engagement, guidance, recognition
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the 5-step guide to adding a new jurisdiction.
+
+## Roadmap
+
+| Phase | Status | Key Milestones |
+|---|---|---|
+| 0 — Bootstrap | ✅ **Complete** | Open source, 75 contracts, 6 jurisdictions |
+| 1 — Community | 🔄 **Active** | Mainnet deploy, audit, JP+GB, first 10 issuances |
+| 2 — DAO | 📋 Planned | RWAG governance token, on-chain voting |
+| 3 — Standard | 🔭 Vision | 20+ jurisdictions, EIP proposal, enterprise SaaS |
+
+## Security
+
+> ⚠️ **Not yet audited.** Deploy on testnets only until a formal audit is completed.
+
+- Compliance in `_update()` — technically impossible to bypass
+- Snapshot revenue uses `block.number - 1` (flash loan protection)
+- Fee hard caps are immutable constants
+- Attestors are trust-scoped per jurisdiction
+
+Audit contributions and security reviews are welcome. Open a [security issue](https://github.com/lxd422152276/rwa20-protocol/issues).
+
+## Links
+
+- 🌐 **Website:** https://lxd422152276.github.io/rwa20-protocol/
+- 📄 **Whitepaper:** https://lxd422152276.github.io/rwa20-protocol/whitepaper.html
+- 🤖 **AI-readable:** https://lxd422152276.github.io/rwa20-protocol/llms.txt
+- 💬 **Discussions:** https://github.com/lxd422152276/rwa20-protocol/discussions
+- 📧 **Contact:** lxd422152276@gmail.com
 
 ## License
 
-MIT
+MIT © RWA20 Protocol Contributors
+
+---
+
+<div align="center">
+<strong>⭐ Star this repo if you believe open standards will unlock the $500T RWA market</strong>
+</div>

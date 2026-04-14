@@ -1,0 +1,65 @@
+{
+  "categories": {
+    "rwa_projects": {
+      "description": "Existing RWA platforms and protocols",
+      "contacts": [
+        { "name": "Lucas Vogelsang", "role": "CEO", "org": "Centrifuge", "email": "lucas@centrifuge.io", "twitter": "@lucasvo", "focus": "trade finance RWA", "persona": "builder" },
+        { "name": "Nathan Allman", "role": "CEO", "org": "Ondo Finance", "email": "nathan@ondo.finance", "twitter": "@nathanallman", "focus": "tokenized treasuries", "persona": "builder" },
+        { "name": "Sid Powell", "role": "CEO", "org": "Maple Finance", "email": "sid@maplelabs.io", "twitter": "@sidpowell_", "focus": "institutional lending", "persona": "builder" },
+        { "name": "Graeme Moore", "role": "Head of Tokenization", "org": "Polymath", "email": "graeme@polymath.network", "twitter": "@GraemeMoore", "focus": "security token standard", "persona": "builder" },
+        { "name": "Carlos Domingo", "role": "CEO", "org": "Securitize", "email": "carlos@securitize.io", "twitter": "@carlosdomingo", "focus": "transfer agent", "persona": "builder" }
+      ]
+    },
+    "defi_influencers": {
+      "description": "Key DeFi thought leaders and researchers",
+      "contacts": [
+        { "name": "Rune Christensen", "role": "Founder", "org": "MakerDAO", "email": "rune@makerdao.com", "twitter": "@RuneKek", "focus": "RWA collateral in DAI", "persona": "influencer" },
+        { "name": "Stani Kulechov", "role": "Founder", "org": "Aave", "email": "stani@aave.com", "twitter": "@StaniKulechov", "focus": "RWA lending", "persona": "influencer" },
+        { "name": "Robert Leshner", "role": "CEO", "org": "Superstate", "email": "robert@superstate.co", "twitter": "@rleshner", "focus": "tokenized funds", "persona": "influencer" },
+        { "name": "Hayden Adams", "role": "Founder", "org": "Uniswap", "email": "hayden@uniswap.org", "twitter": "@haydenzadams", "focus": "compliant token trading", "persona": "influencer" }
+      ]
+    },
+    "institutional_finance": {
+      "description": "TradFi institutions moving into tokenization",
+      "contacts": [
+        { "name": "Larry Fink", "role": "CEO", "org": "BlackRock", "email": "public@blackrock.com", "twitter": "@BlackRock", "focus": "BUIDL tokenized fund", "persona": "institutional" },
+        { "name": "Tom Farley", "role": "President", "org": "Bullish", "email": "tom@bullish.com", "twitter": "@tomfarley_", "focus": "institutional digital assets", "persona": "institutional" },
+        { "name": "Hong Fang", "role": "President", "org": "OKX", "email": "hongfang@okx.com", "twitter": "@HongFang_OKX", "focus": "exchange RWA listing", "persona": "institutional" },
+        { "name": "Avivah Litan", "role": "VP Research", "org": "Gartner", "email": "avivah.litan@gartner.com", "twitter": "@avivahl", "focus": "blockchain research analyst", "persona": "analyst" }
+      ]
+    },
+    "legal_compliance": {
+      "description": "Law firms and compliance specialists in tokenization",
+      "contacts": [
+        { "name": "Lewis Cohen", "role": "Partner", "org": "DLX Law", "email": "lewis@dlxlaw.com", "twitter": "@lcohen_dlx", "focus": "crypto securities law", "persona": "legal" },
+        { "name": "Kat Luke", "role": "Partner", "org": "Clifford Chance", "email": "kat.luke@cliffordchance.com", "twitter": null, "focus": "digital assets legal", "persona": "legal" },
+        { "name": "Haimera Vecchio", "role": "Partner", "org": "Baker McKenzie", "email": "haimera.vecchio@bakermckenzie.com", "twitter": null, "focus": "tokenization law", "persona": "legal" }
+      ]
+    },
+    "regulators_standards": {
+      "description": "Regulators and standards bodies interested in RWA",
+      "contacts": [
+        { "name": "MAS FinTech Team", "role": "Department", "org": "Monetary Authority of Singapore", "email": "fintech@mas.gov.sg", "twitter": "@MAS_sg", "focus": "SG tokenization framework", "persona": "regulator" },
+        { "name": "BIS Innovation Hub", "role": "Team", "org": "Bank for International Settlements", "email": "bisih@bis.org", "twitter": "@BIS_org", "focus": "CBDC and tokenized assets", "persona": "regulator" },
+        { "name": "IOSCO Secretariat", "role": "Department", "org": "IOSCO", "email": "info@iosco.org", "twitter": "@IOSCO_news", "focus": "global securities standards", "persona": "regulator" }
+      ]
+    },
+    "vc_investors": {
+      "description": "VCs actively investing in RWA and DeFi infrastructure",
+      "contacts": [
+        { "name": "Arianna Simpson", "role": "Partner", "org": "a16z crypto", "email": "arianna@a16zcrypto.com", "twitter": "@AriannaSimpson", "focus": "DeFi infrastructure", "persona": "vc" },
+        { "name": "Qiao Wang", "role": "Partner", "org": "Alliance DAO", "email": "qiao@alliance.xyz", "twitter": "@QwQiao", "focus": "DeFi protocols", "persona": "vc" },
+        { "name": "Meltem Demirors", "role": "CSO", "org": "CoinShares", "email": "meltem@coinshares.com", "twitter": "@Melt_Dem", "focus": "institutional crypto", "persona": "vc" },
+        { "name": "Mike Bucella", "role": "Partner", "org": "BlockTower Capital", "email": "mike@blocktower.com", "twitter": "@mikebucella", "focus": "crypto credit & RWA", "persona": "vc" }
+      ]
+    },
+    "media_research": {
+      "description": "Key media and research outlets for crypto/RWA coverage",
+      "contacts": [
+        { "name": "Brady Dale", "role": "Reporter", "org": "Axios Crypto", "email": "brady@axios.com", "twitter": "@BradyDale", "focus": "DeFi and crypto protocols", "persona": "media" },
+        { "name": "Camomile Shumba", "role": "Reporter", "org": "CoinDesk", "email": "camomile@coindesk.com", "twitter": "@CamomileShumba", "focus": "institutional crypto", "persona": "media" },
+        { "name": "Blockworks Research", "role": "Team", "org": "Blockworks", "email": "research@blockworks.co", "twitter": "@BlockworksRes", "focus": "DeFi research reports", "persona": "media" }
+      ]
+    }
+  }
+}

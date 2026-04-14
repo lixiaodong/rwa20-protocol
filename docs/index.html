@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RWA20 Protocol — The Global Standard for Real-World Asset Tokenization</title>
+
+  <!-- SEO / GEO Meta -->
+  <meta name="description" content="RWA20 is an open-source protocol and emerging global standard for tokenizing real-world assets (RWA) on-chain — with built-in multi-jurisdiction legal compliance, on-chain attestation, bonding curve launchpad, and revenue distribution." />
+  <meta name="keywords" content="RWA20, real world asset tokenization, RWA protocol, on-chain compliance, multi-jurisdiction, ERC20, DeFi, Singapore MAS, SEC Reg D, FINMA, TVTG, tokenized assets, blockchain" />
+  <meta name="author" content="RWA20 Protocol Contributors" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://rwa20.org/" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://rwa20.org/" />
+  <meta property="og:title" content="RWA20 Protocol — The Global Standard for Real-World Asset Tokenization" />
+  <meta property="og:description" content="Open-source protocol for tokenizing real-world assets with native multi-jurisdiction legal compliance. SG · CH · AE · LI · MY · US and growing." />
+  <meta property="og:image" content="https://rwa20.org/og-image.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="RWA20 Protocol" />
+  <meta name="twitter:description" content="The open standard for tokenizing real-world assets with on-chain legal compliance." />
+
+  <!-- JSON-LD Structured Data (GEO) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "RWA20 Protocol",
+    "alternateName": "RWA20",
+    "description": "An open-source Ethereum smart contract protocol for tokenizing real-world assets (RWA) with native multi-jurisdiction legal compliance, on-chain legal attestations, bonding curve launchpad, and automated revenue distribution.",
+    "applicationCategory": "Blockchain / DeFi / RWA Tokenization",
+    "operatingSystem": "Ethereum, EVM-compatible blockchains",
+    "url": "https://rwa20.org",
+    "codeRepository": "https://github.com/lxd422152276/rwa20-protocol",
+    "license": "https://opensource.org/licenses/MIT",
+    "programmingLanguage": ["Solidity", "TypeScript", "Next.js"],
+    "keywords": "real world asset, RWA, tokenization, ERC20, compliance, multi-jurisdiction, SG, CH, AE, LI, MY, US, DeFi",
+    "author": {
+      "@type": "Organization",
+      "name": "RWA20 Protocol Contributors"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD",
+      "description": "Free and open-source under MIT license"
+    }
+  }
+  </script>
+
+  <style>
+    :root {
+      --bg: #050a0f;
+      --bg2: #0a1520;
+      --bg3: #0d1e2e;
+      --accent: #00d9ff;
+      --accent2: #00ff9d;
+      --accent3: #7c3aed;
+      --text: #e8f4f8;
+      --muted: #7a9bb5;
+      --border: #1a3448;
+      --card: #0c1c2c;
+      --glow: rgba(0,217,255,0.15);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ─── CANVAS BACKGROUND ─── */
+    #canvas-bg {
+      position: fixed; top:0; left:0; width:100%; height:100%;
+      pointer-events: none; z-index: 0; opacity: 0.35;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed; top: 0; width: 100%; z-index: 100;
+      padding: 16px 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(5,10,15,0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    .logo {
+      font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .logo span { color: var(--accent2); }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none; font-size: 0.9rem;
+      font-weight: 500; transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-cta {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #000 !important; padding: 8px 20px; border-radius: 8px;
+      font-weight: 700 !important; font-size: 0.85rem !important;
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      position: relative; min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 120px 24px 80px;
+      z-index: 1;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(0,217,255,0.08); border: 1px solid rgba(0,217,255,0.25);
+      border-radius: 100px; padding: 6px 16px; font-size: 0.78rem;
+      color: var(--accent); font-weight: 600; letter-spacing: 0.5px;
+      margin-bottom: 28px;
+    }
+    .hero-badge::before {
+      content: ''; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent2);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.4); }
+    }
+    h1 {
+      font-size: clamp(2.8rem, 6vw, 5.5rem);
+      font-weight: 900; line-height: 1.05; letter-spacing: -2px;
+      margin-bottom: 24px;
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 50%, #a78bfa 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      color: var(--muted); max-width: 680px; margin: 0 auto 40px;
+      line-height: 1.7;
+    }
+    .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #000; font-weight: 800; font-size: 0.95rem;
+      padding: 14px 32px; border-radius: 10px; text-decoration: none;
+      box-shadow: 0 0 30px rgba(0,217,255,0.35);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 45px rgba(0,217,255,0.5); }
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 8px;
+      border: 1px solid var(--border); color: var(--text);
+      font-weight: 600; font-size: 0.95rem;
+      padding: 14px 32px; border-radius: 10px; text-decoration: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--accent); background: rgba(0,217,255,0.05); }
+
+    /* ─── STATS ─── */
+    .stats-bar {
+      position: relative; z-index: 1;
+      display: flex; justify-content: center; gap: 0; flex-wrap: wrap;
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+      background: rgba(10,20,30,0.8);
+    }
+    .stat-item {
+      flex: 1; min-width: 160px; padding: 24px 32px; text-align: center;
+      border-right: 1px solid var(--border);
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-num {
+      font-size: 2rem; font-weight: 900; letter-spacing: -1px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .stat-label { font-size: 0.78rem; color: var(--muted); font-weight: 500; margin-top: 4px; }
+
+    /* ─── SECTIONS ─── */
+    section { position: relative; z-index: 1; padding: 100px 24px; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    .section-label {
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 16px;
+    }
+    h2 {
+      font-size: clamp(2rem, 4vw, 3rem); font-weight: 800;
+      letter-spacing: -1px; margin-bottom: 16px;
+    }
+    .section-sub { color: var(--muted); font-size: 1.1rem; max-width: 640px; margin-bottom: 64px; }
+
+    /* ─── PROBLEM / SOLUTION ─── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+    @media(max-width:768px){ .two-col { grid-template-columns: 1fr; } }
+    .problem-box {
+      background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.2);
+      border-radius: 16px; padding: 32px;
+    }
+    .solution-box {
+      background: rgba(0,217,255,0.06); border: 1px solid rgba(0,217,255,0.2);
+      border-radius: 16px; padding: 32px;
+    }
+    .box-title { font-size: 0.85rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; }
+    .problem-box .box-title { color: #f87171; }
+    .solution-box .box-title { color: var(--accent); }
+    .box-list { list-style: none; }
+    .box-list li {
+      padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+      font-size: 0.95rem; display: flex; gap: 12px; align-items: flex-start;
+    }
+    .box-list li:last-child { border-bottom: none; }
+    .box-list li::before { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+    .problem-box .box-list li::before { content: '✗'; color: #f87171; }
+    .solution-box .box-list li::before { content: '✓'; color: var(--accent2); }
+
+    /* ─── FEATURES GRID ─── */
+    .features-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;
+    }
+    .feature-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 32px;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    }
+    .feature-card:hover {
+      border-color: var(--accent); transform: translateY(-4px);
+      box-shadow: 0 8px 40px rgba(0,217,255,0.12);
+    }
+    .feature-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; margin-bottom: 20px;
+      background: linear-gradient(135deg, rgba(0,217,255,0.12), rgba(0,255,157,0.08));
+      border: 1px solid rgba(0,217,255,0.15);
+    }
+    .feature-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 10px; }
+    .feature-card p { color: var(--muted); font-size: 0.9rem; line-height: 1.7; }
+
+    /* ─── JURISDICTION ─── */
+    .juri-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px;
+    }
+    .juri-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px 16px; text-align: center;
+      transition: border-color 0.2s;
+    }
+    .juri-card:hover { border-color: var(--accent); }
+    .juri-card.coming { opacity: 0.5; }
+    .flag { font-size: 2.2rem; margin-bottom: 10px; }
+    .juri-name { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
+    .juri-reg { font-size: 0.72rem; color: var(--muted); }
+    .juri-badge {
+      display: inline-block; margin-top: 8px; padding: 2px 8px;
+      border-radius: 100px; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.5px;
+    }
+    .badge-live { background: rgba(0,255,157,0.12); color: var(--accent2); border: 1px solid rgba(0,255,157,0.3); }
+    .badge-soon { background: rgba(120,80,240,0.12); color: #a78bfa; border: 1px solid rgba(120,80,240,0.3); }
+
+    /* ─── ARCHITECTURE ─── */
+    .arch-diagram {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 48px; overflow: hidden;
+    }
+    .arch-layer {
+      border: 1px solid var(--border); border-radius: 12px; padding: 20px 28px;
+      margin-bottom: 12px; display: flex; align-items: center; gap: 16px;
+      transition: border-color 0.2s;
+    }
+    .arch-layer:hover { border-color: var(--accent); }
+    .arch-layer-label {
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; min-width: 100px; color: var(--muted);
+    }
+    .arch-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip {
+      padding: 4px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 600;
+      background: rgba(0,217,255,0.08); border: 1px solid rgba(0,217,255,0.15); color: var(--accent);
+    }
+    .chip.green { background: rgba(0,255,157,0.08); border-color: rgba(0,255,157,0.2); color: var(--accent2); }
+    .chip.purple { background: rgba(124,58,237,0.1); border-color: rgba(124,58,237,0.25); color: #a78bfa; }
+    .chip.orange { background: rgba(251,146,60,0.08); border-color: rgba(251,146,60,0.2); color: #fb923c; }
+    .arch-arrow {
+      text-align: center; color: var(--muted); font-size: 1.2rem; margin: -4px 0;
+    }
+
+    /* ─── ROADMAP ─── */
+    .roadmap { display: flex; flex-direction: column; gap: 0; }
+    .roadmap-item {
+      display: flex; gap: 32px; padding: 32px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .roadmap-item:last-child { border-bottom: none; }
+    .roadmap-phase {
+      min-width: 140px; padding-top: 4px;
+    }
+    .phase-num {
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 6px;
+    }
+    .phase-name { font-size: 1.1rem; font-weight: 800; }
+    .phase-name.active { color: var(--accent); }
+    .phase-name.done { color: var(--accent2); }
+    .phase-name.upcoming { color: var(--muted); }
+    .phase-status {
+      display: inline-block; margin-top: 8px; padding: 2px 10px;
+      border-radius: 100px; font-size: 0.65rem; font-weight: 700;
+    }
+    .status-done { background: rgba(0,255,157,0.12); color: var(--accent2); }
+    .status-active { background: rgba(0,217,255,0.12); color: var(--accent);
+      animation: glow-pulse 2s infinite; }
+    .status-upcoming { background: rgba(255,255,255,0.06); color: var(--muted); }
+    @keyframes glow-pulse {
+      0%,100% { box-shadow: none; }
+      50% { box-shadow: 0 0 12px rgba(0,217,255,0.4); }
+    }
+    .roadmap-content { flex: 1; }
+    .roadmap-content h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 12px; }
+    .roadmap-content p { color: var(--muted); font-size: 0.9rem; margin-bottom: 16px; }
+    .roadmap-items-list {
+      display: flex; flex-wrap: wrap; gap: 8px;
+    }
+    .r-chip {
+      padding: 4px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 500;
+      background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text);
+    }
+
+    /* ─── FAQ (GEO Optimized) ─── */
+    .faq-list { display: flex; flex-direction: column; gap: 16px; }
+    .faq-item {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; overflow: hidden;
+    }
+    .faq-q {
+      width: 100%; text-align: left; background: none; border: none; cursor: pointer;
+      padding: 20px 24px; display: flex; justify-content: space-between; align-items: center;
+      color: var(--text); font-size: 0.95rem; font-weight: 600;
+    }
+    .faq-q svg { flex-shrink: 0; transition: transform 0.3s; }
+    .faq-item.open .faq-q svg { transform: rotate(180deg); }
+    .faq-a {
+      max-height: 0; overflow: hidden; transition: max-height 0.35s ease;
+      padding: 0 24px;
+    }
+    .faq-item.open .faq-a { max-height: 400px; padding: 0 24px 20px; }
+    .faq-a p { color: var(--muted); font-size: 0.9rem; line-height: 1.8; }
+
+    /* ─── CTA ─── */
+    .cta-section {
+      background: linear-gradient(135deg, rgba(0,217,255,0.06), rgba(0,255,157,0.04));
+      border: 1px solid var(--border); border-radius: 24px;
+      padding: 80px 48px; text-align: center;
+    }
+    .cta-section h2 { font-size: clamp(1.8rem,4vw,2.8rem); margin-bottom: 16px; }
+    .cta-section p { color: var(--muted); font-size: 1.05rem; max-width: 560px; margin: 0 auto 40px; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      position: relative; z-index: 1;
+      border-top: 1px solid var(--border); padding: 48px 24px 32px;
+      background: rgba(5,10,15,0.9);
+    }
+    .footer-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: flex-start;
+      flex-wrap: wrap; gap: 40px;
+    }
+    .footer-brand p { color: var(--muted); font-size: 0.85rem; max-width: 280px; margin-top: 10px; }
+    .footer-links h4 { font-size: 0.8rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+    .footer-links ul { list-style: none; }
+    .footer-links li { margin-bottom: 10px; }
+    .footer-links a { color: var(--muted); text-decoration: none; font-size: 0.88rem; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--accent); }
+    .footer-bottom {
+      max-width: 1100px; margin: 32px auto 0;
+      border-top: 1px solid var(--border); padding-top: 24px;
+      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+      font-size: 0.8rem; color: var(--muted);
+    }
+
+    /* ─── SCROLLBAR ─── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<!-- Particle canvas background -->
+<canvas id="canvas-bg"></canvas>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">RWA<span>20</span></div>
+  <ul class="nav-links">
+    <li><a href="#features">Protocol</a></li>
+    <li><a href="#jurisdictions">Compliance</a></li>
+    <li><a href="#architecture">Architecture</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#faq">FAQ</a></li>
+    <li><a href="https://github.com/lxd422152276/rwa20-protocol" target="_blank" class="nav-cta">GitHub →</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">✦ Open Standard · MIT License · Live on GitHub</div>
+  <h1>
+    The <span class="gradient-text">Global Standard</span><br />
+    for RWA Tokenization
+  </h1>
+  <p class="hero-sub">
+    RWA20 is an open-source Ethereum protocol that lets any real-world asset — real estate, funds, commodities, IP — be tokenized with <strong>native multi-jurisdiction legal compliance</strong>, on-chain attestations, and zero-fee bootstrap economics.
+  </p>
+  <div class="hero-actions">
+    <a href="https://github.com/lxd422152276/rwa20-protocol" target="_blank" class="btn-primary">
+      ⭐ Star on GitHub
+    </a>
+    <a href="#architecture" class="btn-secondary">
+      View Architecture →
+    </a>
+    <a href="whitepaper.html" class="btn-secondary">
+      Read Whitepaper →
+    </a>
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <div class="stat-num">75</div>
+    <div class="stat-label">Smart Contracts</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">6</div>
+    <div class="stat-label">Jurisdictions Live</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">9</div>
+    <div class="stat-label">Attestation Types</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">0%</div>
+    <div class="stat-label">Bootstrap Fees</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">MIT</div>
+    <div class="stat-label">License</div>
+  </div>
+</div>
+
+<!-- PROBLEM / SOLUTION -->
+<section id="problem">
+  <div class="container">
+    <div class="section-label">Why RWA20</div>
+    <h2>The $500 Trillion Problem</h2>
+    <p class="section-sub">Global real-world assets are worth ~$500 trillion. Less than 0.01% is tokenized. The bottleneck is not technology — it is compliance.</p>
+    <div class="two-col">
+      <div class="problem-box">
+        <div class="box-title">❌ Today's Fragmented Reality</div>
+        <ul class="box-list">
+          <li>Every issuer rebuilds compliance from scratch</li>
+          <li>Each jurisdiction requires a separate legal wrapper</li>
+          <li>On-chain and off-chain legal proofs cannot be linked</li>
+          <li>Token transfers bypass compliance checks</li>
+          <li>No standard interoperability between RWA platforms</li>
+          <li>Investors cannot transfer RWA tokens cross-border</li>
+        </ul>
+      </div>
+      <div class="solution-box">
+        <div class="box-title">✅ RWA20 Changes Everything</div>
+        <ul class="box-list">
+          <li>Compliance is built into the token's transfer hook — unforgeable</li>
+          <li>Plug-in jurisdiction modules: SG · CH · AE · LI · MY · US</li>
+          <li>On-chain legal attestations via EAS + Kleros + native registries</li>
+          <li>One protocol works across all asset classes</li>
+          <li>Open standard: add a jurisdiction with one contract</li>
+          <li>Zero-fee bootstrap phase — maximize adoption first</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" style="background: var(--bg2);">
+  <div class="container">
+    <div class="section-label">Core Protocol</div>
+    <h2>Built for the Long Game</h2>
+    <p class="section-sub">Six layers of protocol infrastructure, designed to become an industry standard — not just another DeFi product.</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h3>Compliance-Native Transfer</h3>
+        <p>Legal checks live inside ERC20's <code>_update()</code> hook. Every transfer — DEX, wallet, bridge — is compliance-checked with zero bypass risk.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🌍</div>
+        <h3>Multi-Jurisdiction Engine</h3>
+        <p>OR-logic: investors qualify if they meet <em>any</em> enabled jurisdiction. Adding a new country requires deploying exactly one contract.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚖️</div>
+        <h3>On-Chain Legal Attestations</h3>
+        <p>Property titles, court orders, KYC records, regulatory approvals — attested on-chain via EAS schemas and Kleros arbitration.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💰</div>
+        <h3>Snapshot Revenue Distribution</h3>
+        <p>O(1) per-holder claims using ERC20Votes snapshots. No iteration, no gas explosion. Rent, yield, dividends — all automated.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📈</div>
+        <h3>Bonding Curve Launchpad</h3>
+        <p>Fair-launch price discovery for any asset. Linear bonding curve with configurable base price and slope. No VCs, no presale.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔄</div>
+        <h3>DEX Wrapper (wRWA20)</h3>
+        <p>Compliant tokens become freely tradeable via a wrapped version. The wrapper holds compliance; the inner token stays pristine.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🗳️</div>
+        <h3>Governance Ready</h3>
+        <p>Built on ERC20Votes + AccessControl. Asset holders vote on distributions, compliance parameters, and protocol upgrades on day one.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Protocol Fee Manager</h3>
+        <p>Hard-capped fees (issuance ≤1%, distribution ≤2%, swap ≤0.3%). All start at 0% in bootstrap phase. Fee routing: 70% treasury / 20% ecosystem / 10% stakers.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔮</div>
+        <h3>Oracle Price Feeds</h3>
+        <p>Pluggable oracle interface with Chainlink adapter. Asset NAV updated on-chain; bonding curve price tracks real-world valuations.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- JURISDICTIONS -->
+<section id="jurisdictions">
+  <div class="container">
+    <div class="section-label">Legal Compliance</div>
+    <h2>Global from Day One</h2>
+    <p class="section-sub">Live jurisdiction modules enforce local securities law on-chain. Each module is independently auditable and replaceable.</p>
+    <div class="juri-grid">
+      <div class="juri-card">
+        <div class="flag">🇸🇬</div>
+        <div class="juri-name">Singapore</div>
+        <div class="juri-reg">MAS SFA §274/275</div>
+        <div class="juri-badge badge-live">LIVE</div>
+      </div>
+      <div class="juri-card">
+        <div class="flag">🇨🇭</div>
+        <div class="juri-name">Switzerland</div>
+        <div class="juri-reg">FINMA FinSA · DLT Act</div>
+        <div class="juri-badge badge-live">LIVE</div>
+      </div>
+      <div class="juri-card">
+        <div class="flag">🇦🇪</div>
+        <div class="juri-name">UAE</div>
+        <div class="juri-reg">ADGM FSRA · VARA</div>
+        <div class="juri-badge badge-live">LIVE</div>
+      </div>
+      <div class="juri-card">
+        <div class="flag">🇱🇮</div>
+        <div class="juri-name">Liechtenstein</div>
+        <div class="juri-reg">TVTG · FMA TT Register</div>
+        <div class="juri-badge badge-live">LIVE</div>
+      </div>
+      <div class="juri-card">
+        <div class="flag">🇲🇾</div>
+        <div class="juri-name">Malaysia</div>
+        <div class="juri-reg">SC CMSA · DAG</div>
+        <div class="juri-badge badge-live">LIVE</div>
+      </div>
+      <div class="juri-card">
+        <div class="flag">🇺🇸</div>
+        <div class="juri-name">United States</div>
+        <div class="juri-reg">SEC Reg D 506(b/c) · Reg S</div>
+        <div class="juri-badge badge-live">LIVE</div>
+      </div>
+      <div class="juri-card coming">
+        <div class="flag">🇯🇵</div>
+        <div class="juri-name">Japan</div>
+        <div class="juri-reg">FSA FIEA · JFSA</div>
+        <div class="juri-badge badge-soon">SOON</div>
+      </div>
+      <div class="juri-card coming">
+        <div class="flag">🇬🇧</div>
+        <div class="juri-name">United Kingdom</div>
+        <div class="juri-reg">FCA · FSMA</div>
+        <div class="juri-badge badge-soon">SOON</div>
+      </div>
+    </div>
+    <p style="margin-top: 32px; color: var(--muted); font-size: 0.88rem;">
+      📖 Want to add your jurisdiction? See <a href="https://github.com/lxd422152276/rwa20-protocol/blob/main/CONTRIBUTING.md" style="color: var(--accent);">CONTRIBUTING.md</a> — it takes one contract deployment and a PR.
+    </p>
+  </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section id="architecture" style="background: var(--bg2);">
+  <div class="container">
+    <div class="section-label">Technical Architecture</div>
+    <h2>Layered by Design</h2>
+    <p class="section-sub">Every layer is independently upgradeable. The compliance layer is the foundation — everything else builds on top.</p>
+    <div class="arch-diagram">
+      <div class="arch-layer">
+        <div class="arch-layer-label">Application</div>
+        <div class="arch-chips">
+          <span class="chip">Next.js DApp</span>
+          <span class="chip">Asset Dashboard</span>
+          <span class="chip">Launchpad UI</span>
+          <span class="chip">Compliance Portal</span>
+          <span class="chip">Attestation Explorer</span>
+        </div>
+      </div>
+      <div class="arch-arrow">↑↓</div>
+      <div class="arch-layer">
+        <div class="arch-layer-label">Protocol</div>
+        <div class="arch-chips">
+          <span class="chip green">RWA20Token</span>
+          <span class="chip green">RevenueDistributor</span>
+          <span class="chip green">RWALaunchpad</span>
+          <span class="chip green">wRWA20 DEX Wrapper</span>
+          <span class="chip green">ProtocolFeeManager</span>
+        </div>
+      </div>
+      <div class="arch-arrow">↑↓</div>
+      <div class="arch-layer">
+        <div class="arch-layer-label">Compliance</div>
+        <div class="arch-chips">
+          <span class="chip purple">MultiJurisdictionCompliance</span>
+          <span class="chip purple">SGJurisdiction</span>
+          <span class="chip purple">CHJurisdiction</span>
+          <span class="chip purple">UAEJurisdiction</span>
+          <span class="chip purple">LIJurisdiction</span>
+          <span class="chip purple">MYJurisdiction</span>
+          <span class="chip purple">USJurisdiction</span>
+        </div>
+      </div>
+      <div class="arch-arrow">↑↓</div>
+      <div class="arch-layer">
+        <div class="arch-layer-label">Attestation</div>
+        <div class="arch-chips">
+          <span class="chip orange">LegalAttestationRegistry</span>
+          <span class="chip orange">EASAttestationAdapter</span>
+          <span class="chip orange">KlerosArbitrationAdapter</span>
+          <span class="chip orange">JurisdictionRegistry</span>
+        </div>
+      </div>
+      <div class="arch-arrow">↑↓</div>
+      <div class="arch-layer">
+        <div class="arch-layer-label">Infrastructure</div>
+        <div class="arch-chips">
+          <span class="chip">Ethereum / EVM</span>
+          <span class="chip">OpenZeppelin v5</span>
+          <span class="chip">EAS Mainnet</span>
+          <span class="chip">Chainlink Oracle</span>
+          <span class="chip">IPFS Docs</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ROADMAP -->
+<section id="roadmap">
+  <div class="container">
+    <div class="section-label">Roadmap</div>
+    <h2>From Protocol to Standard</h2>
+    <p class="section-sub">Four phases. Zero shortcuts. The goal is not adoption — it is becoming the inevitable standard.</p>
+    <div class="roadmap">
+      <div class="roadmap-item">
+        <div class="roadmap-phase">
+          <div class="phase-num">Phase 0</div>
+          <div class="phase-name done">Bootstrap</div>
+          <div class="phase-status status-done">✓ COMPLETE</div>
+        </div>
+        <div class="roadmap-content">
+          <h3>Open Source Foundation</h3>
+          <p>Release core protocol under MIT license with zero fees. 75 contracts, 6 jurisdictions, full DApp.</p>
+          <div class="roadmap-items-list">
+            <span class="r-chip">Core ERC20 Token</span>
+            <span class="r-chip">6 Jurisdictions</span>
+            <span class="r-chip">Legal Attestations</span>
+            <span class="r-chip">DApp Frontend</span>
+            <span class="r-chip">Bonding Curve</span>
+            <span class="r-chip">GitHub Open Source</span>
+          </div>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <div class="roadmap-phase">
+          <div class="phase-num">Phase 1</div>
+          <div class="phase-name active">Community</div>
+          <div class="phase-status status-active">● ACTIVE</div>
+        </div>
+        <div class="roadmap-content">
+          <h3>Ecosystem Growth</h3>
+          <p>First 10 RWA issuances on mainnet. Attract compliance researchers and law firms. Begin light fee schedule (0.05% issuance).</p>
+          <div class="roadmap-items-list">
+            <span class="r-chip">Mainnet Deployment</span>
+            <span class="r-chip">Security Audit</span>
+            <span class="r-chip">JP + GB Jurisdictions</span>
+            <span class="r-chip">First 10 Issuances</span>
+            <span class="r-chip">Legal Partner Network</span>
+          </div>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <div class="roadmap-phase">
+          <div class="phase-num">Phase 2</div>
+          <div class="phase-name upcoming">DAO</div>
+          <div class="phase-status status-upcoming">UPCOMING</div>
+        </div>
+        <div class="roadmap-content">
+          <h3>Decentralized Governance</h3>
+          <p>RWAG governance token (100M supply). On-chain voting for fee parameters, jurisdiction approvals, protocol upgrades.</p>
+          <div class="roadmap-items-list">
+            <span class="r-chip">RWAG Token Launch</span>
+            <span class="r-chip">On-Chain Governance</span>
+            <span class="r-chip">Cross-Chain Bridge</span>
+            <span class="r-chip">Institutional API</span>
+          </div>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <div class="roadmap-phase">
+          <div class="phase-num">Phase 3</div>
+          <div class="phase-name upcoming">Standard</div>
+          <div class="phase-status status-upcoming">UPCOMING</div>
+        </div>
+        <div class="roadmap-content">
+          <h3>The Global Standard</h3>
+          <p>RWA20 becomes the ERC20 of real-world assets. 20+ jurisdictions. Enterprise SaaS. EIP submission for standardization.</p>
+          <div class="roadmap-items-list">
+            <span class="r-chip">20+ Jurisdictions</span>
+            <span class="r-chip">Enterprise SaaS</span>
+            <span class="r-chip">EIP Proposal</span>
+            <span class="r-chip">Regulatory Recognition</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ (GEO OPTIMIZED) -->
+<section id="faq" style="background: var(--bg2);">
+  <div class="container">
+    <div class="section-label">FAQ</div>
+    <h2>Common Questions</h2>
+    <p class="section-sub">Answers optimized for developers, lawyers, and asset managers exploring RWA tokenization.</p>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          What is RWA20 and how does it differ from other RWA protocols?
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+        <div class="faq-a"><p>RWA20 is an open-source smart contract protocol and emerging standard for tokenizing real-world assets (RWA) on Ethereum. Unlike closed platforms (Centrifuge, Maple, Ondo), RWA20 is a permissionless standard — similar to how ERC20 standardized fungible tokens. Any developer or asset manager can deploy an RWA20-compliant token with native legal compliance baked into the token transfer mechanism itself, across multiple jurisdictions simultaneously.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          How does RWA20 handle multi-jurisdiction compliance automatically?
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+        <div class="faq-a"><p>The compliance check is embedded inside ERC20's internal <code>_update()</code> function — the lowest-level transfer hook. Every transfer calls MultiJurisdictionCompliance, which uses OR-logic: a transfer is approved if both sender and receiver each qualify under at least one enabled jurisdiction. Jurisdiction modules are independent contracts (SGJurisdiction, USJurisdiction, etc.) that enforce their local securities law. Adding a new country requires deploying one contract and calling <code>registerJurisdiction("XX", moduleAddress)</code>.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          What are on-chain legal attestations and why do they matter for RWA?
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+        <div class="faq-a"><p>On-chain legal attestations are cryptographically signed proofs — stored on the Ethereum blockchain — that link a digital token to its real-world legal basis. RWA20 supports 9 attestation types: property titles, corporate records, court orders, audit certificates, KYC verification, regulatory approvals, valuation reports, custody proofs, and legal opinions. These are bridged from the Ethereum Attestation Service (EAS), Kleros decentralized arbitration, and jurisdiction-specific bodies (ADGM Courts, ACRA, FMA). This creates a traceable legal chain from token to real-world asset.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Is RWA20 truly free to use? What is the business model?
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+        <div class="faq-a"><p>Yes. The protocol is MIT licensed and completely free during the bootstrap phase (Phase 0). Protocol fees are hard-capped in code: issuance ≤1%, revenue distribution ≤2%, DEX swap ≤0.3% — and all start at 0%. The business model follows the open-source playbook: build credibility as a standard first, then introduce optional fee tiers for institutional users in Phase 2-3. The goal is to become the ERC20 of RWA — a standard so widely adopted that commercial services naturally grow around it.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          How can lawyers, regulators, or compliance researchers contribute?
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+        <div class="faq-a"><p>The protocol is designed for legal experts to contribute without writing Solidity. Each jurisdiction module is a standalone contract with a clear interface. Legal researchers can: (1) review and improve existing jurisdiction logic, (2) contribute new jurisdiction modules by filing a GitHub issue describing the regulatory framework, (3) become a trusted attestor within the LegalAttestationRegistry, (4) co-author the jurisdiction-specific compliance documentation. See CONTRIBUTING.md for the full 5-step process.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          What asset types can be tokenized with RWA20?
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+        <div class="faq-a"><p>RWA20 is asset-class agnostic. Any real-world asset that can be legally represented as a fungible token is supported: commercial real estate (rental yield), agricultural commodities (Durian farms, timber), private equity funds, trade finance receivables, government bonds, infrastructure projects, IP royalties, carbon credits, and more. The bonding curve launchpad is particularly suited for assets with progressive price discovery, while the revenue distributor handles any recurring yield stream.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="contribute">
+  <div class="container">
+    <div class="cta-section">
+      <div class="section-label" style="text-align:center">Open Invitation</div>
+      <h2>Help Build the Standard</h2>
+      <p>RWA20 needs developers, lawyers, compliance experts, and jurisdiction researchers worldwide. Every country that joins makes the standard stronger for everyone.</p>
+      <div class="hero-actions">
+        <a href="https://github.com/lxd422152276/rwa20-protocol" target="_blank" class="btn-primary">
+          ⭐ Star &amp; Fork on GitHub
+        </a>
+        <a href="https://github.com/lxd422152276/rwa20-protocol/issues/new" target="_blank" class="btn-secondary">
+          Open an Issue →
+        </a>
+        <a href="mailto:lxd422152276@gmail.com?subject=RWA20%20Collaboration" class="btn-secondary">
+          Contact Team →
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="logo">RWA<span>20</span></div>
+      <p>The open standard for tokenizing real-world assets with native multi-jurisdiction legal compliance.</p>
+    </div>
+    <div class="footer-links">
+      <h4>Protocol</h4>
+      <ul>
+        <li><a href="https://github.com/lxd422152276/rwa20-protocol" target="_blank">GitHub Repository</a></li>
+        <li><a href="https://github.com/lxd422152276/rwa20-protocol/blob/main/README.md" target="_blank">Documentation</a></li>
+        <li><a href="https://github.com/lxd422152276/rwa20-protocol/blob/main/CONTRIBUTING.md" target="_blank">Contributing Guide</a></li>
+        <li><a href="whitepaper.html">Whitepaper</a></li>
+      </ul>
+    </div>
+    <div class="footer-links">
+      <h4>Legal</h4>
+      <ul>
+        <li><a href="#jurisdictions">Jurisdictions</a></li>
+        <li><a href="https://github.com/lxd422152276/rwa20-protocol/blob/main/docs/legal-compliance-architecture.md" target="_blank">Compliance Docs</a></li>
+        <li><a href="https://github.com/lxd422152276/rwa20-protocol/blob/main/LICENSE" target="_blank">MIT License</a></li>
+      </ul>
+    </div>
+    <div class="footer-links">
+      <h4>Community</h4>
+      <ul>
+        <li><a href="https://github.com/lxd422152276/rwa20-protocol/discussions" target="_blank">Discussions</a></li>
+        <li><a href="https://github.com/lxd422152276/rwa20-protocol/issues" target="_blank">Issues</a></li>
+        <li><a href="mailto:lxd422152276@gmail.com">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 RWA20 Protocol Contributors. MIT License.</span>
+    <span>Built to become an industry standard — not just another DeFi product.</span>
+  </div>
+</footer>
+
+<script>
+  // ─── PARTICLE BACKGROUND ───
+  const canvas = document.getElementById('canvas-bg');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  class Particle {
+    constructor() { this.reset(); }
+    reset() {
+      this.x = Math.random() * W;
+      this.y = Math.random() * H;
+      this.vx = (Math.random() - 0.5) * 0.3;
+      this.vy = (Math.random() - 0.5) * 0.3;
+      this.r = Math.random() * 1.5 + 0.5;
+      this.alpha = Math.random() * 0.5 + 0.1;
+      this.color = Math.random() > 0.5 ? '#00d9ff' : '#00ff9d';
+    }
+    update() {
+      this.x += this.vx; this.y += this.vy;
+      if (this.x < 0 || this.x > W || this.y < 0 || this.y > H) this.reset();
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
+      ctx.fillStyle = this.color;
+      ctx.globalAlpha = this.alpha;
+      ctx.fill();
+    }
+  }
+
+  for (let i = 0; i < 120; i++) particles.push(new Particle());
+
+  function drawConnections() {
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i+1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 100) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = '#00d9ff';
+          ctx.globalAlpha = 0.04 * (1 - dist/100);
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, W, H);
+    drawConnections();
+    particles.forEach(p => { p.update(); p.draw(); });
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  // ─── FAQ TOGGLE ───
+  function toggleFaq(btn) {
+    const item = btn.closest('.faq-item');
+    const wasOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+    if (!wasOpen) item.classList.add('open');
+  }
+
+  // ─── SCROLL REVEAL ───
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.feature-card, .juri-card, .roadmap-item, .faq-item').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>
